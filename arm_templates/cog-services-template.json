@@ -1,0 +1,65 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "String"
+        },
+        "location": {
+            "type": "String"
+        },
+        "sku": {
+            "type": "String",
+            "metadata": {
+                "description" : "Cognitive Service Skus"
+            },
+            "allowedValues": [
+                "F0",
+                "S1",
+                "S2",
+                "S3",
+                "S4"
+              ]
+        },
+        "svcKind": {
+            "type" : "String",
+            "metadata": {
+                "description" : "Cognitive Service Type"
+            },
+            "allowedValues": [
+                "TextAnalytics",
+                "ComputerVision"
+            ]
+        }
+    },
+    "variables": {
+        "cognitiveservicesid": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('name'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2017-04-18",
+            "name": "[parameters('name')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "kind": "[parameters('svcKind')]",
+            "properties": {}
+        }
+    ],
+    "outputs": {
+      "region" : {
+        "type": "string",
+        "value": "[parameters('location')]"
+      },
+      "apiKey": {
+        "type": "string",
+        "value": "[listKeys(variables('cognitiveservicesid'),'2017-04-18').key1]"
+      },
+      "endpoint": {
+        "type": "string",
+        "value": "[reference(variables('cognitiveservicesid'),'2017-04-18').endpoint]"
+      }
+    }
+}
